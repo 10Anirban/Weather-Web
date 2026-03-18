@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>WeatherFlow - Glassmorphic Weather UI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #6ea6b8, #4fa3b8);
+    }
+
+    .card {
+      width: 1000px;
+      padding: 30px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      color: white;
+    }
+
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .city {
+      font-size: 28px;
+      font-weight: 600;
+    }
+
+    .date {
+      font-size: 14px;
+      opacity: 0.8;
+    }
+
+    .search {
+      padding: 10px 20px;
+      border-radius: 20px;
+      border: none;
+      outline: none;
+      background: rgba(255,255,255,0.2);
+      color: white;
+    }
+
+    .search::placeholder {
+      color: rgba(255,255,255,0.7);
+    }
+
+    .control-btn {
+      padding: 8px 12px;
+      border-radius: 12px;
+      border: none;
+      outline: none;
+      background: rgba(255,255,255,0.2);
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s ease;
+    }
+
+    .control-btn:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .main {
+      display: flex;
+      margin-top: 30px;
+    }
+
+    .left {
+      width: 35%;
+    }
+
+    .weather-icon {
+      font-size: 64px;
+      line-height: 1;
+    }
+
+    .temp {
+      font-size: 64px;
+      font-weight: 600;
+    }
+
+    .desc {
+      margin-top: 10px;
+      opacity: 0.9;
+    }
+
+    .feels {
+      margin-top: 5px;
+      font-size: 14px;
+      opacity: 0.7;
+    }
+
+    .stats {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+
+    .box {
+      padding: 15px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.15);
+      text-align: center;
+    }
+
+    .box small {
+      display: block;
+      opacity: 0.7;
+    }
+
+    .right {
+      width: 65%;
+      padding-left: 20px;
+    }
+
+    .forecast-box {
+      background: rgba(255,255,255,0.15);
+      border-radius: 20px;
+      padding: 20px;
+    }
+
+    .forecast-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    canvas {
+      width: 100% !important;
+      height: 200px !important;
+      max-height: 200px !important;
+      min-height: 200px !important;
+      display: block;
+    }
+
+    .footer {
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      opacity: 0.6;
+    }
+
+    /* Loading and Error States */
+    .loading-overlay, .error-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, #6ea6b8, #4fa3b8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .loading-content {
+      text-align: center;
+      color: white;
+    }
+
+    .loading-spinner {
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top: 3px solid white;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .error-content {
+      text-align: center;
+      color: white;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(20px);
+      padding: 30px;
+      border-radius: 20px;
+      max-width: 400px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* Weekly Forecast Styles */
+    .weekly-forecast {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .forecast-day {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 15px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 12px;
+      transition: background 0.3s ease;
+    }
+
+    .forecast-day:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    .forecast-date {
+      flex: 1;
+      font-weight: 500;
+    }
+
+    .forecast-weather {
+      flex: 1;
+      text-align: center;
+      opacity: 0.9;
+      font-size: 14px;
+    }
+
+    .forecast-temps {
+      flex: 1;
+      text-align: right;
+      font-weight: 600;
+    }
+
+    .forecast-temps .high {
+      margin-right: 8px;
+    }
+
+    .forecast-temps .low {
+      opacity: 0.7;
+    }
+
+    /* Scrollbar styling */
+    .weekly-forecast::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .weekly-forecast::-webkit-scrollbar-track {
+      background: rgba(255,255,255,0.1);
+      border-radius: 3px;
+    }
+
+    .weekly-forecast::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.3);
+      border-radius: 3px;
+    }
+
+    .weekly-forecast::-webkit-scrollbar-thumb:hover {
+      background: rgba(255,255,255,0.5);
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+      body {
+        padding: 20px;
+      }
+      
+      .card {
+        width: 100%;
+        max-width: 100%;
+        padding: 20px;
+        margin: 0;
+      }
+      
+      .main {
+        flex-direction: column;
+        margin-top: 20px;
+      }
+      
+      .left, .right {
+        width: 100%;
+      }
+      
+      .right {
+        padding-left: 0;
+        margin-top: 20px;
+      }
+      
+      .temp {
+        font-size: 48px;
+      }
+      
+      .weather-icon {
+        font-size: 48px;
+      }
+      
+      .city {
+        font-size: 24px;
+      }
+      
+      .search {
+        width: 100%;
+        margin-top: 10px;
+      }
+      
+      .top {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+      
+      .box {
+        padding: 12px;
+      }
+      
+      .forecast-day {
+        padding: 10px 12px;
+        font-size: 14px;
+      }
+      
+      .forecast-date span {
+        font-size: 16px !important;
+      }
+      
+      canvas {
+        height: 150px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .card {
+        padding: 15px;
+      }
+      
+      .temp {
+        font-size: 36px;
+      }
+      
+      .weather-icon {
+        font-size: 36px;
+      }
+      
+      .city {
+        font-size: 20px;
+      }
+      
+      .stats {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+      
+      .forecast-day {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+        padding: 8px 10px;
+      }
+      
+      .forecast-temps {
+        text-align: left;
+      }
+      
+      .footer {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- Loading State -->
+<div id="loadingState" class="loading-overlay hidden">
+  <div class="loading-content">
+    <div class="loading-spinner"></div>
+    <p>Loading weather data...</p>
+  </div>
+</div>
+
+<!-- Error State -->
+<div id="errorState" class="error-overlay hidden">
+  <div class="error-content">
+    <h3>Weather Data Unavailable</h3>
+    <p id="errorMessage">Unable to load weather data. Please check your connection and try again.</p>
+    <button onclick="location.reload()" style="margin-top: 15px; padding: 10px 20px; border-radius: 20px; border: none; background: rgba(255,255,255,0.2); color: white; cursor: pointer;">Retry</button>
+  </div>
+</div>
+
+<div class="card">
+  
+  <!-- Top -->
+  <div class="top">
+    <div>
+      <div id="cityName" class="city">Paris, France</div>
+      <div id="currentDate" class="date">Monday, 12 June 2023</div>
+    </div>
+    <div style="display: flex; gap: 10px; align-items: center;">
+      <button id="geolocationBtn" class="control-btn" title="Use my location">📍</button>
+      <button id="unitToggle" class="control-btn" title="Toggle °C/°F">°C</button>
+      <input id="citySearch" class="search" placeholder="Search city...">
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+
+    <!-- Left -->
+    <div class="left">
+      <div style="display: flex; align-items: center; gap: 20px;">
+        <div id="weatherIcon" class="weather-icon">☀️</div>
+        <div>
+          <div id="currentTemp" class="temp">24°</div>
+          <div id="weatherDescription" class="desc">Partly Cloudy</div>
+          <div class="feels">Feels like 26°C</div>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="box">
+          <small>HUMIDITY</small>
+          <b id="humidity">64%</b>
+        </div>
+        <div class="box">
+          <small>WIND</small>
+          <b id="windSpeed">12 km/h</b>
+        </div>
+        <div class="box">
+          <small>PRECIPITATION</small>
+          <b id="precipitation">10%</b>
+        </div>
+        <div class="box">
+          <small>UV INDEX</small>
+          <b id="uvIndex">4 Med</b>
+        </div>
+      </div>
+      
+      <div class="stats">
+        <div class="box">
+          <small>SUNRISE</small>
+          <b id="sunrise">6:30 AM</b>
+        </div>
+        <div class="box">
+          <small>SUNSET</small>
+          <b id="sunset">7:45 PM</b>
+        </div>
+        <div class="box">
+          <small>VISIBILITY</small>
+          <b id="visibility">10 km</b>
+        </div>
+        <div class="box">
+          <small>PRESSURE</small>
+          <b id="pressure">1013 mb</b>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right -->
+    <div class="right">
+      <div class="forecast-box">
+        <div class="forecast-header">
+          <div>24-Hour Forecast</div>
+          <div>Hourly</div>
+        </div>
+        <canvas id="chart"></canvas>
+      </div>
+      
+      <div class="forecast-box" style="margin-top: 20px;">
+        <div class="forecast-header">
+          <div>7-Day Forecast</div>
+          <div>Weekly</div>
+        </div>
+        <div id="weeklyForecast" class="weekly-forecast">
+          <!-- Weekly forecast items will be inserted here -->
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div>© 2024 WeatherFlow. All rights reserved.</div>
+    <div>Privacy Policy &nbsp;&nbsp; Terms of Service</div>
+  </div>
+
+</div>
+
+<!-- Chart JS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="weather.js"></script>
+
+</body>
+</html>
