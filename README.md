@@ -36,11 +36,6 @@ A beautiful, responsive weather website built with HTML, CSS, and JavaScript usi
 
 ## API Integration
 
-### Open-Meteo API
-- **Weather Data**: `https://api.open-meteo.com/v1/forecast`
-- **Air Quality**: `https://air-quality-api.open-meteo.com/v1/air-quality`
-- **Geocoding**: `https://geocoding-api.open-meteo.com/v1/search`
-
 ### API Features Used
 - Current weather conditions
 - Hourly temperature and precipitation
