@@ -8,8 +8,7 @@ A beautiful, responsive weather website built with HTML, CSS, and JavaScript usi
 - **Hourly Forecast**: 24-hour weather predictions
 - **7-Day Forecast**: Weekly weather outlook
 - **Air Quality**: Real-time AQI with health recommendations
-- **Sun Times**: Sunrise and sunset with progress indicator
-
+- **Sun Times**: Sunrise and sunset with progress indicato
 ### 🎨 Beautiful UI
 - **Modern Design**: Clean, minimalist interface using Tailwind CSS
 - **Responsive**: Works perfectly on desktop, tablet, and mobile
