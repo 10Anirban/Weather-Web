@@ -2,8 +2,7 @@
 
 A beautiful, responsive weather website built with HTML, CSS, and JavaScript using the Open-Meteo API.
 
-## Features
-
+## Feature
 ### 🌤️ Real Weather Data
 - **Current Weather**: Temperature, conditions, humidity, wind speed, UV index
 - **Hourly Forecast**: 24-hour weather predictions
