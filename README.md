@@ -14,6 +14,7 @@ A beautiful, responsive weather website built with HTML, CSS, and JavaScript usi
 - **Dark Mode**: Automatic dark/light theme support
 - **Smooth Animations**: Elegant transitions and loading states
 - **Material Icons**: Beautiful weather condition icons
+  
 ### 🔍 User Features
 - **City Search**: Search for any city worldwide
 - **Geolocation**: Auto-detect user's location
